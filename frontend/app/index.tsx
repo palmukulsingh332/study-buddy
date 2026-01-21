@@ -188,7 +188,8 @@ export default function HomeScreen() {
     // Group revisions by date and count them
     const dateCounts: { [key: string]: number } = {};
     allRevisions.forEach(revision => {
-      const dateStr = revision.revision_date;
+      // Extract just the date part (yyyy-MM-dd) from revision_date
+      const dateStr = revision.revision_date.split('T')[0];
       dateCounts[dateStr] = (dateCounts[dateStr] || 0) + 1;
     });
 
