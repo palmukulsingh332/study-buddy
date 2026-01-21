@@ -294,6 +294,44 @@ export default function SubjectsScreen() {
           </View>
         </KeyboardAvoidingView>
       </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <Pressable 
+          style={styles.deleteModalOverlay}
+          onPress={() => setDeleteModalVisible(false)}
+        >
+          <View style={styles.deleteModalContent}>
+            <View style={styles.deleteIconContainer}>
+              <Ionicons name="warning" size={40} color="#ef4444" />
+            </View>
+            <Text style={styles.deleteModalTitle}>Delete Subject</Text>
+            <Text style={styles.deleteModalText}>
+              Are you sure you want to delete "{subjectToDelete?.name}"? This will also delete all topics under this subject.
+            </Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setDeleteModalVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButton}
+                onPress={confirmDeleteSubject}
+              >
+                <Ionicons name="trash" size={18} color="#fff" />
+                <Text style={styles.deleteButtonText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
