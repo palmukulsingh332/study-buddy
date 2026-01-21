@@ -31,8 +31,11 @@ export default function HomeScreen() {
   const router = useRouter();
   const [todayRevisions, setTodayRevisions] = useState<Revision[]>([]);
   const [upcomingRevisions, setUpcomingRevisions] = useState<Revision[]>([]);
+  const [allRevisions, setAllRevisions] = useState<Revision[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState<string>(format(new Date(), 'yyyy-MM-dd'));
+  const [selectedDateRevisions, setSelectedDateRevisions] = useState<Revision[]>([]);
 
   const fetchRevisions = async () => {
     try {
