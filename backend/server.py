@@ -330,12 +330,15 @@ async def get_upcoming_revisions():
     """Get upcoming revisions (grouped by topic, showing next revision date)"""
     today = datetime.utcnow()
     
+    # Batch fetch all subjects to avoid N+1 queries
+    subjects = await db.subjects.find().to_list(None)
+    subjects_dict = {str(s['_id']): s['name'] for s in subjects}
+    
     topics = await db.topics.find().to_list(1000)
     upcoming = []
     
     for topic in topics:
-        subject = await db.subjects.find_one({"_id": ObjectId(topic['subject_id'])})
-        subject_name = subject['name'] if subject else 'Unknown'
+        subject_name = subjects_dict.get(topic['subject_id'], 'Unknown')
         
         # Find the next incomplete revision date for this topic
         next_revision = None
