@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { format, parseISO, isToday } from 'date-fns';
+import { format, parseISO, isToday, isSameDay } from 'date-fns';
+import { Calendar, DateData } from 'react-native-calendars';
 
 const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
