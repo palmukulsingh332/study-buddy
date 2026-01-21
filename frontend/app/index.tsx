@@ -44,15 +44,26 @@ export default function HomeScreen() {
         fetch(`${API_URL}/api/revisions/upcoming`),
       ]);
 
+      let todayData: Revision[] = [];
+      let upcomingData: Revision[] = [];
+
       if (todayRes.ok) {
-        const todayData = await todayRes.json();
+        todayData = await todayRes.json();
         setTodayRevisions(todayData);
       }
 
       if (upcomingRes.ok) {
-        const upcomingData = await upcomingRes.json();
+        upcomingData = await upcomingRes.json();
         setUpcomingRevisions(upcomingData);
       }
+
+      // Combine all revisions for calendar
+      const combined = [...todayData, ...upcomingData];
+      setAllRevisions(combined);
+      
+      // Set selected date revisions for today by default
+      const todayStr = format(new Date(), 'yyyy-MM-dd');
+      setSelectedDateRevisions(combined.filter(r => r.revision_date === todayStr));
     } catch (error) {
       console.error('Error fetching revisions:', error);
     } finally {
