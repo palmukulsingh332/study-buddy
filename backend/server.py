@@ -299,12 +299,15 @@ async def get_today_revisions():
     today_start = datetime.combine(today, datetime.min.time())
     today_end = datetime.combine(today, datetime.max.time())
     
+    # Batch fetch all subjects to avoid N+1 queries
+    subjects = await db.subjects.find().to_list(None)
+    subjects_dict = {str(s['_id']): s['name'] for s in subjects}
+    
     topics = await db.topics.find().to_list(1000)
     today_revisions = []
     
     for topic in topics:
-        subject = await db.subjects.find_one({"_id": ObjectId(topic['subject_id'])})
-        subject_name = subject['name'] if subject else 'Unknown'
+        subject_name = subjects_dict.get(topic['subject_id'], 'Unknown')
         
         for rd in topic['revision_dates']:
             revision_date = datetime.fromisoformat(rd['date'].replace('Z', '+00:00')) if isinstance(rd['date'], str) else rd['date']
