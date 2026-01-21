@@ -15,7 +15,7 @@ import {
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
-const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
+const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
 interface Subject {
   id: string;
