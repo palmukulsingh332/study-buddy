@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend",
+    "name": "Study Planner",
     "slug": "frontend",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,14 +9,21 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSUserNotificationUsageDescription": "Get reminders for your study revisions"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#000"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "permissions": [
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -32,6 +39,13 @@
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#000"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#4ade80"
         }
       ]
     ],
