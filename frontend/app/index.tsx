@@ -39,13 +39,15 @@ export default function HomeScreen() {
 
   const fetchRevisions = async () => {
     try {
-      const [todayRes, upcomingRes] = await Promise.all([
+      const [todayRes, upcomingRes, allRes] = await Promise.all([
         fetch(`${API_URL}/api/revisions/today`),
         fetch(`${API_URL}/api/revisions/upcoming`),
+        fetch(`${API_URL}/api/revisions/all`),
       ]);
 
       let todayData: Revision[] = [];
       let upcomingData: Revision[] = [];
+      let allData: Revision[] = [];
 
       if (todayRes.ok) {
         todayData = await todayRes.json();
@@ -57,13 +59,14 @@ export default function HomeScreen() {
         setUpcomingRevisions(upcomingData);
       }
 
-      // Combine all revisions for calendar
-      const combined = [...todayData, ...upcomingData];
-      setAllRevisions(combined);
+      if (allRes.ok) {
+        allData = await allRes.json();
+        setAllRevisions(allData);
+      }
       
       // Set selected date revisions for today by default
       const todayStr = format(new Date(), 'yyyy-MM-dd');
-      setSelectedDateRevisions(combined.filter(r => r.revision_date === todayStr));
+      setSelectedDateRevisions(allData.filter(r => r.revision_date.split('T')[0] === todayStr));
     } catch (error) {
       console.error('Error fetching revisions:', error);
     } finally {
