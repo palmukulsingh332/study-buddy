@@ -319,30 +319,10 @@ export default function HomeScreen() {
           )}
         </View>
 
-        {/* Today's Revisions Section */}
-        <View style={styles.section}>
-          <View style={styles.sectionHeader}>
-            <Ionicons name="today" size={24} color="#f59e0b" />
-            <Text style={styles.sectionTitle}>Today's Revisions</Text>
-            <View style={styles.countBadge}>
-              <Text style={styles.countText}>{todayRevisions.length}</Text>
-            </View>
-          </View>
-          {todayRevisions.length === 0 ? (
-            <View style={styles.emptyCard}>
-              <Ionicons name="checkmark-done-circle" size={48} color="#4ade80" />
-              <Text style={styles.emptyText}>No revisions for today!</Text>
-              <Text style={styles.emptySubtext}>You're all caught up</Text>
-            </View>
-          ) : (
-            todayRevisions.map((revision) => renderRevisionCard(revision, true))
-          )}
-        </View>
-
         {/* Upcoming Revisions Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Ionicons name="calendar" size={24} color="#3b82f6" />
+            <Ionicons name="calendar-outline" size={24} color="#3b82f6" />
             <Text style={styles.sectionTitle}>Upcoming Revisions</Text>
             <View style={styles.countBadge}>
               <Text style={styles.countText}>{upcomingRevisions.length}</Text>
