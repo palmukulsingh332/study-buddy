@@ -80,33 +80,30 @@ export default function SubjectDetailScreen() {
   };
 
   const deleteTopic = (topic: Topic) => {
-    Alert.alert(
-      'Delete Topic',
-      `Are you sure you want to delete "${topic.name}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const response = await fetch(`${API_URL}/api/topics/${topic.id}`, {
-                method: 'DELETE',
-              });
+    setTopicToDelete(topic);
+    setDeleteModalVisible(true);
+  };
 
-              if (response.ok) {
-                fetchData();
-              } else {
-                Alert.alert('Error', 'Failed to delete topic');
-              }
-            } catch (error) {
-              console.error('Error deleting topic:', error);
-              Alert.alert('Error', 'Failed to delete topic');
-            }
-          },
-        },
-      ]
-    );
+  const confirmDeleteTopic = async () => {
+    if (!topicToDelete) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/topics/${topicToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        fetchData();
+      } else {
+        Alert.alert('Error', 'Failed to delete topic');
+      }
+    } catch (error) {
+      console.error('Error deleting topic:', error);
+      Alert.alert('Error', 'Failed to delete topic');
+    } finally {
+      setDeleteModalVisible(false);
+      setTopicToDelete(null);
+    }
   };
 
   const getNextRevision = (revisionDates: Topic['revision_dates']) => {
