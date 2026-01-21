@@ -180,6 +180,68 @@ export default function HomeScreen() {
     }
   };
 
+  // Generate marked dates for calendar
+  const markedDates = useMemo(() => {
+    const marks: { [key: string]: any } = {};
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    
+    // Group revisions by date and count them
+    const dateCounts: { [key: string]: number } = {};
+    allRevisions.forEach(revision => {
+      const dateStr = revision.revision_date;
+      dateCounts[dateStr] = (dateCounts[dateStr] || 0) + 1;
+    });
+
+    // Create markers for each date with revisions
+    Object.keys(dateCounts).forEach(dateStr => {
+      marks[dateStr] = {
+        marked: true,
+        dotColor: dateStr === todayStr ? '#4ade80' : '#3b82f6',
+        ...(dateStr === selectedDate && { selected: true, selectedColor: '#3b82f6' }),
+      };
+    });
+
+    // Always mark selected date
+    if (!marks[selectedDate]) {
+      marks[selectedDate] = {
+        selected: true,
+        selectedColor: '#3b82f6',
+      };
+    } else {
+      marks[selectedDate].selected = true;
+      marks[selectedDate].selectedColor = '#3b82f6';
+    }
+
+    // Mark today
+    if (!marks[todayStr]) {
+      marks[todayStr] = {
+        marked: false,
+      };
+    }
+    marks[todayStr].customStyles = {
+      container: {
+        borderWidth: 2,
+        borderColor: '#4ade80',
+      },
+    };
+
+    return marks;
+  }, [allRevisions, selectedDate]);
+
+  const onDayPress = (day: DateData) => {
+    setSelectedDate(day.dateString);
+    const revisionsForDate = allRevisions.filter(r => r.revision_date === day.dateString);
+    setSelectedDateRevisions(revisionsForDate);
+  };
+
+  const getSelectedDateLabel = () => {
+    const selected = parseISO(selectedDate);
+    if (isToday(selected)) {
+      return "Today's Revisions";
+    }
+    return `Revisions for ${format(selected, 'MMM dd, yyyy')}`;
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
