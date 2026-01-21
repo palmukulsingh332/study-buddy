@@ -81,3 +81,7 @@ android-sdk/ -e
 # Environment files - Commented out for Kubernetes deployment
 # *.env
 # *.env.*
+-e 
+# Environment files
+*.env
+*.env.*
