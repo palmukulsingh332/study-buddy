@@ -231,7 +231,7 @@ export default function HomeScreen() {
 
   const onDayPress = (day: DateData) => {
     setSelectedDate(day.dateString);
-    const revisionsForDate = allRevisions.filter(r => r.revision_date === day.dateString);
+    const revisionsForDate = allRevisions.filter(r => r.revision_date.split('T')[0] === day.dateString);
     setSelectedDateRevisions(revisionsForDate);
   };
 
