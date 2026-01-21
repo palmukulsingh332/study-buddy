@@ -193,36 +193,28 @@ export default function SubjectDetailScreen() {
                 ) : null}
 
                 <View style={styles.revisionInfo}>
-                  <View style={styles.progressContainer}>
-                    <Text style={styles.progressLabel}>Progress:</Text>
-                    <View style={styles.progressDots}>
-                      {[2, 7, 14].map((day) => {
-                        const revision = topic.revision_dates.find((rd) => rd.day_number === day);
-                        return (
-                          <View
-                            key={day}
-                            style={[
-                              styles.progressDot,
-                              {
-                                backgroundColor: revision?.completed ? '#4ade80' : '#2a2a40',
-                              },
-                            ]}
-                          >
-                            <Text style={styles.progressDotText}>D{day}</Text>
+                  <Text style={styles.revisionTitle}>Revision Schedule:</Text>
+                  <View style={styles.allRevisionsContainer}>
+                    {topic.revision_dates
+                      .sort((a, b) => a.day_number - b.day_number)
+                      .map((revision) => (
+                        <View key={revision.day_number} style={styles.revisionRow}>
+                          <View style={[styles.dayBadge, { backgroundColor: getDayColor(revision.day_number) }]}>
+                            <Text style={styles.dayBadgeText}>Day {revision.day_number}</Text>
                           </View>
-                        );
-                      })}
-                    </View>
+                          <Text style={styles.revisionDateText}>{formatDate(revision.date)}</Text>
+                          {revision.completed ? (
+                            <View style={styles.statusCompleted}>
+                              <Ionicons name="checkmark-circle" size={16} color="#4ade80" />
+                            </View>
+                          ) : (
+                            <View style={styles.statusPending}>
+                              <Ionicons name="time-outline" size={16} color="#f59e0b" />
+                            </View>
+                          )}
+                        </View>
+                      ))}
                   </View>
-
-                  {nextRevision && (
-                    <View style={styles.nextRevision}>
-                      <Ionicons name="calendar-outline" size={14} color="#888" />
-                      <Text style={styles.nextRevisionText}>
-                        Next: {formatDate(nextRevision.date)} (Day {nextRevision.day_number})
-                      </Text>
-                    </View>
-                  )}
 
                   {completedCount === 3 && (
                     <View style={styles.completedBadge}>
