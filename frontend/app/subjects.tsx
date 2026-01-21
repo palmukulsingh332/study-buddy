@@ -134,33 +134,30 @@ export default function SubjectsScreen() {
   };
 
   const deleteSubject = (subject: Subject) => {
-    Alert.alert(
-      'Delete Subject',
-      `Are you sure you want to delete "${subject.name}"? This will also delete all topics under this subject.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              const response = await fetch(`${API_URL}/api/subjects/${subject.id}`, {
-                method: 'DELETE',
-              });
+    setSubjectToDelete(subject);
+    setDeleteModalVisible(true);
+  };
 
-              if (response.ok) {
-                fetchSubjects();
-              } else {
-                Alert.alert('Error', 'Failed to delete subject');
-              }
-            } catch (error) {
-              console.error('Error deleting subject:', error);
-              Alert.alert('Error', 'Failed to delete subject');
-            }
-          },
-        },
-      ]
-    );
+  const confirmDeleteSubject = async () => {
+    if (!subjectToDelete) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/subjects/${subjectToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        fetchSubjects();
+      } else {
+        Alert.alert('Error', 'Failed to delete subject');
+      }
+    } catch (error) {
+      console.error('Error deleting subject:', error);
+      Alert.alert('Error', 'Failed to delete subject');
+    } finally {
+      setDeleteModalVisible(false);
+      setSubjectToDelete(null);
+    }
   };
 
   const openEditModal = (subject: Subject) => {
