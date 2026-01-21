@@ -11,6 +11,7 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,6 +30,8 @@ export default function SubjectsScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [subjectToDelete, setSubjectToDelete] = useState<Subject | null>(null);
   const [newSubjectName, setNewSubjectName] = useState('');
   const [editingSubject, setEditingSubject] = useState<Subject | null>(null);
   const [editSubjectName, setEditSubjectName] = useState('');
