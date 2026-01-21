@@ -78,6 +78,6 @@ agenthub/agents/youtube/db
 
 # Mobile development
 android-sdk/ -e 
-# Environment files
-*.env
-*.env.*
+# Environment files - Commented out for Kubernetes deployment
+# *.env
+# *.env.*
