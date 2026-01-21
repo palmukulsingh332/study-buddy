@@ -251,6 +251,74 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
         }
       >
+        {/* Monthly Calendar Section */}
+        <View style={styles.calendarSection}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="calendar" size={24} color="#4ade80" />
+            <Text style={styles.sectionTitle}>Revision Calendar</Text>
+          </View>
+          <View style={styles.calendarContainer}>
+            <Calendar
+              current={selectedDate}
+              onDayPress={onDayPress}
+              markedDates={markedDates}
+              theme={{
+                backgroundColor: '#1a1a2e',
+                calendarBackground: '#1a1a2e',
+                textSectionTitleColor: '#888',
+                selectedDayBackgroundColor: '#3b82f6',
+                selectedDayTextColor: '#fff',
+                todayTextColor: '#4ade80',
+                dayTextColor: '#fff',
+                textDisabledColor: '#444',
+                dotColor: '#3b82f6',
+                selectedDotColor: '#fff',
+                arrowColor: '#4ade80',
+                monthTextColor: '#fff',
+                textDayFontWeight: '500',
+                textMonthFontWeight: 'bold',
+                textDayHeaderFontWeight: '500',
+                textDayFontSize: 14,
+                textMonthFontSize: 18,
+                textDayHeaderFontSize: 12,
+              }}
+              style={styles.calendar}
+              enableSwipeMonths={true}
+            />
+          </View>
+          {/* Calendar Legend */}
+          <View style={styles.legendContainer}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#4ade80' }]} />
+              <Text style={styles.legendText}>Today</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: '#3b82f6' }]} />
+              <Text style={styles.legendText}>Has Revisions</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Selected Date Revisions Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="bookmark" size={24} color="#f59e0b" />
+            <Text style={styles.sectionTitle}>{getSelectedDateLabel()}</Text>
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{selectedDateRevisions.length}</Text>
+            </View>
+          </View>
+          {selectedDateRevisions.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Ionicons name="checkmark-done-circle" size={48} color="#4ade80" />
+              <Text style={styles.emptyText}>No revisions for this date</Text>
+              <Text style={styles.emptySubtext}>Select a date with revisions</Text>
+            </View>
+          ) : (
+            selectedDateRevisions.map((revision) => renderRevisionCard(revision, isToday(parseISO(selectedDate))))
+          )}
+        </View>
+
         {/* Today's Revisions Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
