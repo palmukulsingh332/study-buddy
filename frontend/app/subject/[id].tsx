@@ -128,6 +128,19 @@ export default function SubjectDetailScreen() {
     return '#3b82f6';
   };
 
+  const getDayColor = (day: number) => {
+    switch (day) {
+      case 2:
+        return '#f59e0b';
+      case 7:
+        return '#3b82f6';
+      case 14:
+        return '#8b5cf6';
+      default:
+        return '#6b7280';
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView
