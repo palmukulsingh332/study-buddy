@@ -178,10 +178,14 @@ async def create_topic(topic: TopicCreate):
 @api_router.get("/topics", response_model=List[TopicResponse])
 async def get_all_topics():
     topics = await db.topics.find().sort("created_at", -1).to_list(1000)
+    
+    # Batch fetch all subjects to avoid N+1 queries
+    subjects = await db.subjects.find().to_list(None)
+    subjects_dict = {str(s['_id']): s['name'] for s in subjects}
+    
     result = []
     for t in topics:
-        subject = await db.subjects.find_one({"_id": ObjectId(t['subject_id'])})
-        t['subject_name'] = subject['name'] if subject else 'Unknown'
+        t['subject_name'] = subjects_dict.get(t['subject_id'], 'Unknown')
         result.append(serialize_doc(t))
     return result
 
