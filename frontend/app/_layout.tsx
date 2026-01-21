@@ -19,7 +19,11 @@ function BackButton() {
   const router = useRouter();
   
   const handlePress = () => {
-    router.back();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
   };
   
   return (
