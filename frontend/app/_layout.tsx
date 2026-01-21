@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 // Configure notification handler
@@ -17,16 +17,35 @@ Notifications.setNotificationHandler({
 // Custom back button component
 function BackButton() {
   const router = useRouter();
+  
+  const handlePress = () => {
+    console.log('Back button pressed');
+    router.back();
+  };
+  
   return (
-    <TouchableOpacity 
-      onPress={() => router.back()} 
-      style={{ padding: 8, marginLeft: -8 }}
-      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+    <Pressable 
+      onPress={handlePress}
+      style={({ pressed }) => [
+        styles.backButton,
+        pressed && styles.backButtonPressed
+      ]}
     >
       <Ionicons name="arrow-back" size={24} color="#fff" />
-    </TouchableOpacity>
+    </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  backButton: {
+    padding: 12,
+    marginLeft: -8,
+    marginRight: 8,
+  },
+  backButtonPressed: {
+    opacity: 0.7,
+  },
+});
 
 export default function RootLayout() {
   useEffect(() => {
