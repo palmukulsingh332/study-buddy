@@ -24,6 +24,7 @@ interface Revision {
   notes: string;
   day_number: number;
   revision_date: string;
+  completed?: boolean;
   created_at?: string;
 }
 
