@@ -367,6 +367,38 @@ async def get_upcoming_revisions():
     return upcoming
 
 
+@api_router.get("/revisions/all")
+async def get_all_revisions():
+    """Get ALL revisions (past, today, and future) for calendar view"""
+    # Batch fetch all subjects to avoid N+1 queries
+    subjects = await db.subjects.find().to_list(None)
+    subjects_dict = {str(s['_id']): s['name'] for s in subjects}
+    
+    topics = await db.topics.find().to_list(1000)
+    all_revisions = []
+    
+    for topic in topics:
+        subject_name = subjects_dict.get(topic['subject_id'], 'Unknown')
+        
+        # Include all revision dates (completed and not completed)
+        for rd in topic['revision_dates']:
+            all_revisions.append({
+                "id": str(topic['_id']),
+                "topic_name": topic['name'],
+                "subject_name": subject_name,
+                "subject_id": topic['subject_id'],
+                "notes": topic['notes'],
+                "day_number": rd['day_number'],
+                "revision_date": rd['date'],
+                "completed": rd['completed'],
+                "created_at": topic['created_at'].isoformat()
+            })
+    
+    # Sort by revision date
+    all_revisions.sort(key=lambda x: x['revision_date'])
+    return all_revisions
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
