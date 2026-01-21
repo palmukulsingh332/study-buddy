@@ -79,6 +79,7 @@ export default function RootLayout() {
           options={{
             title: 'Subjects',
             headerShown: true,
+            headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -86,6 +87,7 @@ export default function RootLayout() {
           options={{
             title: 'Topics',
             headerShown: true,
+            headerLeft: () => <BackButton />,
           }}
         />
         <Stack.Screen
@@ -93,6 +95,7 @@ export default function RootLayout() {
           options={{
             title: 'Add Topic',
             headerShown: true,
+            headerLeft: () => <BackButton />,
             presentation: 'modal',
           }}
         />
@@ -101,6 +104,7 @@ export default function RootLayout() {
           options={{
             title: 'Edit Topic',
             headerShown: true,
+            headerLeft: () => <BackButton />,
             presentation: 'modal',
           }}
         />
