@@ -390,6 +390,38 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100,
   },
+  calendarSection: {
+    marginBottom: 24,
+  },
+  calendarContainer: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  calendar: {
+    borderRadius: 16,
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 12,
+    gap: 24,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    marginRight: 6,
+  },
+  legendText: {
+    color: '#888',
+    fontSize: 12,
+  },
   section: {
     marginBottom: 24,
   },
