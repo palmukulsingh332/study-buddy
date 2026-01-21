@@ -1,8 +1,8 @@
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import { Platform, Pressable, StyleSheet } from 'react-native';
+import { Platform, Pressable, StyleSheet, View, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 // Configure notification handler
@@ -19,13 +19,14 @@ function BackButton() {
   const router = useRouter();
   
   const handlePress = () => {
-    console.log('Back button pressed');
     router.back();
   };
   
   return (
     <Pressable 
       onPress={handlePress}
+      accessibilityRole="button"
+      accessibilityLabel="Go back"
       style={({ pressed }) => [
         styles.backButton,
         pressed && styles.backButtonPressed
@@ -39,8 +40,9 @@ function BackButton() {
 const styles = StyleSheet.create({
   backButton: {
     padding: 12,
-    marginLeft: -8,
+    marginLeft: -4,
     marginRight: 8,
+    cursor: 'pointer',
   },
   backButtonPressed: {
     opacity: 0.7,
