@@ -1,16 +1,234 @@
-import { Text, View, StyleSheet, Image } from "react-native";
+import React, { useState, useCallback } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+  Alert,
+  Platform,
+} from 'react-native';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { format, parseISO, isToday } from 'date-fns';
 
-const EXPO_PUBLIC_BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+const API_URL = process.env.EXPO_PUBLIC_BACKEND_URL || '';
 
-export default function Index() {
-  console.log(EXPO_PUBLIC_BACKEND_URL, "EXPO_PUBLIC_BACKEND_URL");
+interface Revision {
+  id: string;
+  topic_name: string;
+  subject_name: string;
+  subject_id: string;
+  notes: string;
+  day_number: number;
+  revision_date: string;
+  created_at?: string;
+}
+
+export default function HomeScreen() {
+  const router = useRouter();
+  const [todayRevisions, setTodayRevisions] = useState<Revision[]>([]);
+  const [upcomingRevisions, setUpcomingRevisions] = useState<Revision[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRevisions = async () => {
+    try {
+      const [todayRes, upcomingRes] = await Promise.all([
+        fetch(`${API_URL}/api/revisions/today`),
+        fetch(`${API_URL}/api/revisions/upcoming`),
+      ]);
+
+      if (todayRes.ok) {
+        const todayData = await todayRes.json();
+        setTodayRevisions(todayData);
+      }
+
+      if (upcomingRes.ok) {
+        const upcomingData = await upcomingRes.json();
+        setUpcomingRevisions(upcomingData);
+      }
+    } catch (error) {
+      console.error('Error fetching revisions:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRevisions();
+    }, [])
+  );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchRevisions();
+    setRefreshing(false);
+  };
+
+  const markAsCompleted = async (topicId: string, dayNumber: number) => {
+    try {
+      const response = await fetch(`${API_URL}/api/topics/complete-revision`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          topic_id: topicId,
+          day_number: dayNumber,
+        }),
+      });
+
+      if (response.ok) {
+        Alert.alert('Success', 'Revision marked as completed!');
+        fetchRevisions();
+      } else {
+        Alert.alert('Error', 'Failed to mark revision as completed');
+      }
+    } catch (error) {
+      console.error('Error marking revision as completed:', error);
+      Alert.alert('Error', 'Failed to mark revision as completed');
+    }
+  };
+
+  const formatRevisionDate = (dateStr: string) => {
+    try {
+      const date = parseISO(dateStr);
+      if (isToday(date)) {
+        return 'Today';
+      }
+      return format(date, 'dd MMM yyyy');
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const getDayLabel = (dayNumber: number) => {
+    switch (dayNumber) {
+      case 2:
+        return 'Day 2';
+      case 7:
+        return 'Day 7';
+      case 14:
+        return 'Day 14';
+      default:
+        return `Day ${dayNumber}`;
+    }
+  };
+
+  const renderRevisionCard = (revision: Revision, isToday: boolean = false) => (
+    <View key={`${revision.id}-${revision.day_number}`} style={styles.revisionCard}>
+      <View style={styles.revisionHeader}>
+        <View style={styles.subjectBadge}>
+          <Text style={styles.subjectBadgeText}>{revision.subject_name}</Text>
+        </View>
+        <View style={[styles.dayBadge, { backgroundColor: getDayColor(revision.day_number) }]}>
+          <Text style={styles.dayBadgeText}>{getDayLabel(revision.day_number)}</Text>
+        </View>
+      </View>
+      <Text style={styles.topicName}>{revision.topic_name}</Text>
+      {revision.notes ? (
+        <Text style={styles.notesText} numberOfLines={2}>
+          {revision.notes}
+        </Text>
+      ) : null}
+      <View style={styles.revisionFooter}>
+        <View style={styles.dateContainer}>
+          <Ionicons name="calendar-outline" size={14} color="#888" />
+          <Text style={styles.dateText}>{formatRevisionDate(revision.revision_date)}</Text>
+        </View>
+        {isToday && (
+          <TouchableOpacity
+            style={styles.completeButton}
+            onPress={() => markAsCompleted(revision.id, revision.day_number)}
+          >
+            <Ionicons name="checkmark-circle" size={18} color="#4ade80" />
+            <Text style={styles.completeButtonText}>Complete</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    </View>
+  );
+
+  const getDayColor = (dayNumber: number) => {
+    switch (dayNumber) {
+      case 2:
+        return '#f59e0b';
+      case 7:
+        return '#3b82f6';
+      case 14:
+        return '#8b5cf6';
+      default:
+        return '#6b7280';
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../assets/images/app-image.png")}
-        style={styles.image}
-      />
+      <ScrollView
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#fff" />
+        }
+      >
+        {/* Today's Revisions Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="today" size={24} color="#f59e0b" />
+            <Text style={styles.sectionTitle}>Today's Revisions</Text>
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{todayRevisions.length}</Text>
+            </View>
+          </View>
+          {todayRevisions.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Ionicons name="checkmark-done-circle" size={48} color="#4ade80" />
+              <Text style={styles.emptyText}>No revisions for today!</Text>
+              <Text style={styles.emptySubtext}>You're all caught up</Text>
+            </View>
+          ) : (
+            todayRevisions.map((revision) => renderRevisionCard(revision, true))
+          )}
+        </View>
+
+        {/* Upcoming Revisions Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Ionicons name="calendar" size={24} color="#3b82f6" />
+            <Text style={styles.sectionTitle}>Upcoming Revisions</Text>
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>{upcomingRevisions.length}</Text>
+            </View>
+          </View>
+          {upcomingRevisions.length === 0 ? (
+            <View style={styles.emptyCard}>
+              <Ionicons name="book-outline" size={48} color="#6b7280" />
+              <Text style={styles.emptyText}>No upcoming revisions</Text>
+              <Text style={styles.emptySubtext}>Add topics to start tracking</Text>
+            </View>
+          ) : (
+            upcomingRevisions.map((revision) => renderRevisionCard(revision, false))
+          )}
+        </View>
+      </ScrollView>
+
+      {/* Bottom Navigation */}
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navButton} onPress={() => router.push('/subjects')}>
+          <Ionicons name="library" size={24} color="#fff" />
+          <Text style={styles.navButtonText}>Subjects</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.navButton, styles.addButton]}
+          onPress={() => router.push('/add-topic')}
+        >
+          <Ionicons name="add-circle" size={32} color="#4ade80" />
+          <Text style={styles.navButtonText}>Add Topic</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -18,13 +236,157 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0c0c0c",
-    alignItems: "center",
-    justifyContent: "center",
+    backgroundColor: '#0f0f1a',
   },
-  image: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 100,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginLeft: 8,
+    flex: 1,
+  },
+  countBadge: {
+    backgroundColor: '#2a2a40',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  countText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  revisionCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 12,
+    borderLeftWidth: 4,
+    borderLeftColor: '#3b82f6',
+  },
+  revisionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  subjectBadge: {
+    backgroundColor: '#2a2a40',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  subjectBadgeText: {
+    color: '#a5b4fc',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  dayBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  dayBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  topicName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#fff',
+    marginBottom: 4,
+  },
+  notesText: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 8,
+  },
+  revisionFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  dateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  dateText: {
+    color: '#888',
+    fontSize: 13,
+    marginLeft: 4,
+  },
+  completeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(74, 222, 128, 0.1)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  completeButtonText: {
+    color: '#4ade80',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 4,
+  },
+  emptyCard: {
+    backgroundColor: '#1a1a2e',
+    borderRadius: 12,
+    padding: 32,
+    alignItems: 'center',
+  },
+  emptyText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 12,
+  },
+  emptySubtext: {
+    color: '#666',
+    fontSize: 14,
+    marginTop: 4,
+  },
+  bottomNav: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    backgroundColor: '#1a1a2e',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    paddingBottom: Platform.OS === 'ios' ? 28 : 12,
+    borderTopWidth: 1,
+    borderTopColor: '#2a2a40',
+  },
+  navButton: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  addButton: {
+    marginLeft: 16,
+  },
+  navButtonText: {
+    color: '#fff',
+    fontSize: 12,
+    marginTop: 4,
   },
 });
