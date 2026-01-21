@@ -345,6 +345,46 @@ const styles = StyleSheet.create({
   revisionInfo: {
     marginTop: 8,
   },
+  revisionTitle: {
+    color: '#9ca3af',
+    fontSize: 13,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  allRevisionsContainer: {
+    backgroundColor: '#2a2a40',
+    borderRadius: 8,
+    padding: 12,
+  },
+  revisionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  dayBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    minWidth: 60,
+    alignItems: 'center',
+  },
+  dayBadgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  revisionDateText: {
+    color: '#fff',
+    fontSize: 14,
+    flex: 1,
+    marginLeft: 12,
+  },
+  statusCompleted: {
+    padding: 4,
+  },
+  statusPending: {
+    padding: 4,
+  },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
