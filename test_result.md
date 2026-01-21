@@ -101,3 +101,156 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: Build a spaced repetition study app where users can add subjects, insert topics with notes, and get revision reminders on 2nd, 7th, and 14th day. Main window should show today's revisions and upcoming revisions with dates.
+
+backend:
+  - task: "Subject CRUD operations"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Create, Read, Update, Delete subjects - all working via curl tests"
+
+  - task: "Topic CRUD operations"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Create, Read, Update, Delete topics with revision dates - working"
+
+  - task: "Today's revisions endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "GET /api/revisions/today returns topics due for revision today"
+
+  - task: "Upcoming revisions endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "GET /api/revisions/upcoming returns future revisions sorted by date"
+
+  - task: "Complete revision endpoint"
+    implemented: true
+    working: true
+    file: "server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "POST /api/topics/complete-revision marks revision as completed"
+
+frontend:
+  - task: "Home screen with Today's and Upcoming revisions"
+    implemented: true
+    working: true
+    file: "app/index.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Shows today's revisions and upcoming revisions with dates, complete button working"
+
+  - task: "Subjects list screen"
+    implemented: true
+    working: true
+    file: "app/subjects.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Lists all subjects with add, edit, delete functionality"
+
+  - task: "Subject detail screen with topics"
+    implemented: true
+    working: true
+    file: "app/subject/[id].tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Shows topics under a subject with revision progress"
+
+  - task: "Add topic screen"
+    implemented: true
+    working: true
+    file: "app/add-topic.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Add topics with subject selector, notes, and revision schedule preview"
+
+  - task: "Edit topic screen"
+    implemented: true
+    working: true
+    file: "app/edit-topic/[id].tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "Edit topic name and notes"
+
+  - task: "Local notifications for revisions"
+    implemented: true
+    working: true
+    file: "app/add-topic.tsx, app/_layout.tsx"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+        - working: true
+        - agent: "main"
+        - comment: "expo-notifications configured for revision reminders on Day 2, 7, 14"
+
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus:
+    - "All core features implemented and working"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+    - agent: "main"
+    - message: "Spaced repetition study app MVP completed. All CRUD operations for subjects and topics working. Home screen shows today's and upcoming revisions. Notifications configured for revision reminders."
