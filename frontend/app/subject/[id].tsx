@@ -254,6 +254,44 @@ export default function SubjectDetailScreen() {
       >
         <Ionicons name="add" size={28} color="#fff" />
       </TouchableOpacity>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        visible={deleteModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setDeleteModalVisible(false)}
+      >
+        <Pressable 
+          style={styles.deleteModalOverlay}
+          onPress={() => setDeleteModalVisible(false)}
+        >
+          <View style={styles.deleteModalContent}>
+            <View style={styles.deleteIconContainer}>
+              <Ionicons name="warning" size={40} color="#ef4444" />
+            </View>
+            <Text style={styles.deleteModalTitle}>Delete Topic</Text>
+            <Text style={styles.deleteModalText}>
+              Are you sure you want to delete "{topicToDelete?.name}"?
+            </Text>
+            <View style={styles.deleteModalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setDeleteModalVisible(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteButtonStyle}
+                onPress={confirmDeleteTopic}
+              >
+                <Ionicons name="trash" size={18} color="#fff" />
+                <Text style={styles.deleteButtonTextStyle}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
